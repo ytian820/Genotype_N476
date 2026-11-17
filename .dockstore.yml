@@ -3,3 +3,6 @@ workflows:
   - name: test_tools
     subclass: WDL
     primaryDescriptorPath: /workflows/test_tools.wdl
+  - name: screen_autosomes
+    subclass: WDL
+    primaryDescriptorPath: /workflows/01_screen_autosomes.wdl
