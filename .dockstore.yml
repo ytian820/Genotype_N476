@@ -9,3 +9,6 @@ workflows:
   - name: screen_chrX
     subclass: WDL
     primaryDescriptorPath: /workflows/02_screen_chrX.wdl
+  - name: merge_cohort
+    subclass: WDL
+    primaryDescriptorPath: /workflows/03_merge_cohort.wdl
