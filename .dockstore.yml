@@ -6,3 +6,6 @@ workflows:
   - name: screen_autosomes
     subclass: WDL
     primaryDescriptorPath: /workflows/01_screen_autosomes.wdl
+  - name: screen_chrX
+    subclass: WDL
+    primaryDescriptorPath: /workflows/02_screen_chrX.wdl
