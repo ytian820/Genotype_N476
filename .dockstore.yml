@@ -1,0 +1,5 @@
+version: 1.2
+workflows:
+  - name: test_tools
+    subclass: WDL
+    primaryDescriptorPath: /workflows/test_tools.wdl
