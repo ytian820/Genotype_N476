@@ -33,12 +33,8 @@ task ScreenAutosomalVcf {
         File vcf
     }
 
-    # Serialize the localized path rather than interpolate it into Python code.
-    File input_path_json = write_json(vcf)
-
     command <<<
         set -euo pipefail
-        cp "~{input_path_json}" input_path.json
 
         echo "Purpose: autosomal screening of one single-sample GRCh37 VCF"
         echo "Chromosomes: 1-22; distinct single-base A/C/G/T REF and ALT"
@@ -49,13 +45,14 @@ task ScreenAutosomalVcf {
         python3 --version
         bcftools --version
 
-        python3 - <<'PYTHON'
+        # Cromwell substitutes the localized File path in the command.
+        python3 - "~{vcf}" <<'PYTHON'
         import gzip
         import json
+        import sys
         from collections import Counter
 
-        with open("input_path.json") as handle:
-            input_path = json.load(handle)
+        input_path = sys.argv[1]
         autosomes = {str(i) for i in range(1, 23)}
         excluded_filters = {"DUPE", "TRIALLELIC", "ZEROED_OUT_ASSAY"}
         bases = {"A", "C", "G", "T"}
