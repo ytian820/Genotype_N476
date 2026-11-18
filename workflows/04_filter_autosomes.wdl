@@ -3,10 +3,9 @@ version 1.0
 # Purpose: remove autosomal variants with genotype missingness > 5%.
 # Phenotype: none. Unit: one cohort/sample_set; all input samples are retained.
 # Input: checked, sorted, GT-only autosomal VCF from 03 (chromosomes 1-22).
-# Outputs: PGEN/PVAR/PSAM, filtered bgzip VCF and tabix index.
+# Outputs: filtered PGEN/PVAR/PSAM only.
 # Half-missing GTs are imported as missing (--vcf-half-call missing).
-# Sample IDs are imported intact as IID and exported with id-paste=iid.
-# PLINK2 re-exports the VCF; original text/annotations are not guaranteed unchanged.
+# Sample IDs are imported intact as both FID and IID (--double-id).
 # No MAF, HWE, LD or additional chromosome filter is applied.
 
 # Part 1. Workflow interface
@@ -23,12 +22,10 @@ workflow FilterAutosomes {
         File filtered_pgen = FilterMissingness.filtered_pgen
         File filtered_pvar = FilterMissingness.filtered_pvar
         File filtered_psam = FilterMissingness.filtered_psam
-        File filtered_vcf = FilterMissingness.filtered_vcf
-        File filtered_vcf_index = FilterMissingness.filtered_vcf_index
     }
 }
 
-# Part 2. Filter with PLINK2, then export the retained dataset
+# Part 2. Filter with PLINK2 and save the retained PGEN dataset
 task FilterMissingness {
     input {
         File vcf
@@ -47,22 +44,12 @@ task FilterMissingness {
             --make-pgen \
             --threads 1 --memory 3000 \
             --out autosomes.missingness05
-
-        # Export from the filtered PGEN files; retain the original IID as VCF ID.
-        plink2 --pfile autosomes.missingness05 \
-            --export vcf bgz id-paste=iid \
-            --threads 1 --memory 3000 \
-            --out autosomes.missingness05.export
-
-        bcftools index --tbi autosomes.missingness05.export.vcf.gz
     >>>
 
     output {
         File filtered_pgen = "autosomes.missingness05.pgen"
         File filtered_pvar = "autosomes.missingness05.pvar"
         File filtered_psam = "autosomes.missingness05.psam"
-        File filtered_vcf = "autosomes.missingness05.export.vcf.gz"
-        File filtered_vcf_index = "autosomes.missingness05.export.vcf.gz.tbi"
     }
 
     # Part 3. Container and resources
