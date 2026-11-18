@@ -18,3 +18,6 @@ workflows:
   - name: filter_autosomes
     subclass: WDL
     primaryDescriptorPath: /workflows/04_variant_coarse_filtering.wdl
+  - name: sample_call_rate_and_king
+    subclass: WDL
+    primaryDescriptorPath: /workflows/05a_sample_call_rate_and_king.wdl
