@@ -12,3 +12,6 @@ workflows:
   - name: merge_cohort
     subclass: WDL
     primaryDescriptorPath: /workflows/03_merge_cohort.wdl
+  - name: check_03_basic_check
+    subclass: WDL
+    primaryDescriptorPath: /workflows/check_03_basic_check.wdl
