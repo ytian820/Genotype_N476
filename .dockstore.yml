@@ -21,3 +21,6 @@ workflows:
   - name: sample_call_rate_and_king
     subclass: WDL
     primaryDescriptorPath: /workflows/05a_sample_call_rate_and_king.wdl
+  - name: prepare_1kg_reference
+    subclass: WDL
+    primaryDescriptorPath: /workflows/prepare_1kg_reference.wdl
