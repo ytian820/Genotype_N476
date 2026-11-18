@@ -24,3 +24,6 @@ workflows:
   - name: prepare_1kg_reference
     subclass: WDL
     primaryDescriptorPath: /workflows/prepare_1kg_reference.wdl
+  - name: ancestry_projection
+    subclass: WDL
+    primaryDescriptorPath: /workflows/05b_ancestry_projection.wdl
