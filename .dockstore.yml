@@ -27,3 +27,6 @@ workflows:
   - name: ancestry_projection
     subclass: WDL
     primaryDescriptorPath: /workflows/05b_ancestry_projection.wdl
+  - name: ancestry_assignment
+    subclass: WDL
+    primaryDescriptorPath: /workflows/05c_ancestry_assignment.wdl
