@@ -17,4 +17,4 @@ workflows:
     primaryDescriptorPath: /workflows/check_03_basic_check.wdl
   - name: filter_autosomes
     subclass: WDL
-    primaryDescriptorPath: /workflows/04_filter_autosomes.wdl
+    primaryDescriptorPath: /workflows/04_variant_coarse_filtering.wdl
