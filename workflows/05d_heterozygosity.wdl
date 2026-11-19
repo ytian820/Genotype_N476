@@ -7,6 +7,7 @@ version 1.0
 # Execution only: input checks, plots and summary review are performed manually.
 # Parameters: biallelic A/C/G/T SNPs on chromosomes 1-22; hardcalls.
 # Variant missingness <= 0.01, MAF >= 0.05, GRCh37 long-range LD exclusion (same regions as 05b),
+# HWE p >= 1e-5 with keep-fewhet (retain heterozygosity-deficient variants; default k=0),
 # then LD pruning (500 kb windows, step 1, r2 <= 0.2).
 # Calculate F only on the retained SNPs.
 # Use the F column from --het (method-of-moments inbreeding coefficient).
@@ -55,11 +56,12 @@ task FlagHeterozygosity {
         echo "Autosomal biallelic SNP PLINK2 F statistic; all samples retained"
         echo "Flag: F outside whole-cohort mean(F) +/- 3 * sample SD(F); ancestry annotation only"
         echo "Variants: missingness <= 0.01; MAF >= 0.05; GRCh37 long-range LD exclusion; LD pruning 500kb 1 0.2"
+        echo "HWE: 1e-5 keep-fewhet; default k=0"
         echo "No PC adjustment or ancestry-specific thresholds"
         echo "Resources: 1 CPU, 4 GB RAM, 20 GB disk"
 
         # Part 2. Select common, LD-pruned SNPs and calculate PLINK2 F
-        ## Step 1. Apply missingness, MAF and long-range LD filters before LD pruning.
+        ## Step 1. Apply missingness, MAF, HWE and long-range LD filters before LD pruning.
         # Same frozen GRCh37 ranges as 05b, 1-based inclusive:
         # https://github.com/meyer-lab-cshl/plinkQC/blob/master/inst/extdata/high-LD-regions-hg19-GRCh37.txt
         cat > long_ld.txt <<'REGIONS'
@@ -88,6 +90,7 @@ task FlagHeterozygosity {
         plink2 --pgen "~{pgen}" --pvar "~{pvar}" --psam "~{psam}" \
             --autosome --snps-only just-acgt --max-alleles 2 \
             --geno 0.01 --maf 0.05 --exclude range long_ld.txt \
+            --hwe 1e-5 keep-fewhet \
             --indep-pairwise 500kb 1 0.2 \
             --threads 1 --memory 3000 --out pruning
 
