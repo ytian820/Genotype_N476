@@ -30,3 +30,6 @@ workflows:
   - name: ancestry_assignment
     subclass: WDL
     primaryDescriptorPath: /workflows/05c_ancestry_assignment.wdl
+  - name: heterozygosity
+    subclass: WDL
+    primaryDescriptorPath: /workflows/05d_heterozygosity.wdl
