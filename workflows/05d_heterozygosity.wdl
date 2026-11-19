@@ -3,7 +3,7 @@ version 1.0
 # Purpose: flag autosomal heterozygosity outliers using PLINK2 F in the 05a cohort.
 # Phenotype: none. Unit: genotyped sample, identified by FID/IID.
 # Inputs: 05a PGEN/PVAR/PSAM and 05c ancestry assignments.
-# Outputs: all-sample table, flagged-sample table, retained SNP list and PLINK logs.
+# Outputs: all-sample table, flagged-sample table, passing-sample list, retained SNP list and PLINK logs.
 # Execution only: input checks, plots and summary review are performed manually.
 # Parameters: biallelic A/C/G/T SNPs on chromosomes 1-22; hardcalls.
 # MAF >= 0.05, GRCh37 long-range LD exclusion (same regions as 05b),
@@ -33,6 +33,7 @@ workflow Heterozygosity {
     output {
         File heterozygosity = FlagHeterozygosity.heterozygosity
         File heterozygosity_outliers = FlagHeterozygosity.heterozygosity_outliers
+        File samples_keep = FlagHeterozygosity.samples_keep
         File pruned_variants = FlagHeterozygosity.pruned_variants
         File pruning_log = FlagHeterozygosity.pruning_log
         File plink_log = FlagHeterozygosity.plink_log
@@ -138,12 +139,21 @@ task FlagHeterozygosity {
                 writer = csv.DictWriter(handle, fieldnames=list(samples[0]), delimiter='\t')
                 writer.writeheader()
                 writer.writerows(rows)
+
+        # PLINK --keep list: samples within mean(F) +/- 3 SD, including boundaries.
+        with open('samples.keep', 'w', newline='') as handle:
+            writer = csv.writer(handle, delimiter='\t')
+            writer.writerow(['#FID', 'IID'])
+            for row, value in zip(samples, f_values):
+                if lower <= value <= upper:
+                    writer.writerow([row['FID'], row['IID']])
         PY
     >>>
 
     output {
         File heterozygosity = "heterozygosity.tsv"
         File heterozygosity_outliers = "heterozygosity_outliers.tsv"
+        File samples_keep = "samples.keep"
         File pruned_variants = "pruning.prune.in"
         File pruning_log = "pruning.log"
         File plink_log = "cohort.log"
