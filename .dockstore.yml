@@ -33,3 +33,6 @@ workflows:
   - name: heterozygosity
     subclass: WDL
     primaryDescriptorPath: /workflows/05d_heterozygosity.wdl
+  - name: sex_inference
+    subclass: WDL
+    primaryDescriptorPath: /workflows/05e_sex_inference.wdl
