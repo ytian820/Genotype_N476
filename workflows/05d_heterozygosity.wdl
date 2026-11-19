@@ -6,9 +6,9 @@ version 1.0
 # Outputs: all-sample table, flagged-sample table, passing-sample list, retained SNP list and PLINK logs.
 # Execution only: input checks, plots and summary review are performed manually.
 # Parameters: biallelic A/C/G/T SNPs on chromosomes 1-22; hardcalls.
-# MAF >= 0.05, GRCh37 long-range LD exclusion (same regions as 05b),
+# Variant missingness <= 0.01, MAF >= 0.05, GRCh37 long-range LD exclusion (same regions as 05b),
 # then LD pruning (500 kb windows, step 1, r2 <= 0.2).
-# No extra missingness filter; calculate F only on the retained SNPs.
+# Calculate F only on the retained SNPs.
 # Use the F column from --het (method-of-moments inbreeding coefficient).
 # Flag F outside mean(F) +/- 3 * sample SD(F): low_F or high_F.
 # Low F indicates excess heterozygosity; high F indicates reduced heterozygosity.
@@ -54,12 +54,12 @@ task FlagHeterozygosity {
         # Part 1. Run configuration (PLINK2 and Python are provided by the image)
         echo "Autosomal biallelic SNP PLINK2 F statistic; all samples retained"
         echo "Flag: F outside whole-cohort mean(F) +/- 3 * sample SD(F); ancestry annotation only"
-        echo "Variants: MAF >= 0.05; GRCh37 long-range LD exclusion; LD pruning 500kb 1 0.2"
-        echo "No extra missingness filter, PC adjustment or ancestry-specific thresholds"
+        echo "Variants: missingness <= 0.01; MAF >= 0.05; GRCh37 long-range LD exclusion; LD pruning 500kb 1 0.2"
+        echo "No PC adjustment or ancestry-specific thresholds"
         echo "Resources: 1 CPU, 4 GB RAM, 20 GB disk"
 
         # Part 2. Select common, LD-pruned SNPs and calculate PLINK2 F
-        ## Step 1. Apply MAF and long-range LD filters before LD pruning.
+        ## Step 1. Apply missingness, MAF and long-range LD filters before LD pruning.
         # Same frozen GRCh37 ranges as 05b, 1-based inclusive:
         # https://github.com/meyer-lab-cshl/plinkQC/blob/master/inst/extdata/high-LD-regions-hg19-GRCh37.txt
         cat > long_ld.txt <<'REGIONS'
@@ -87,7 +87,7 @@ task FlagHeterozygosity {
 
         plink2 --pgen "~{pgen}" --pvar "~{pvar}" --psam "~{psam}" \
             --autosome --snps-only just-acgt --max-alleles 2 \
-            --maf 0.05 --exclude range long_ld.txt \
+            --geno 0.01 --maf 0.05 --exclude range long_ld.txt \
             --indep-pairwise 500kb 1 0.2 \
             --threads 1 --memory 3000 --out pruning
 
