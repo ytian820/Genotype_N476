@@ -10,7 +10,7 @@ version 1.0
 # dataset; official second-degree relative exclusions; reference MAF >= 0.05; 20 PCs.
 # Reference exclusions are applied before missingness, MAF, LD and PCA.
 # Downloads PLINK2 deg2_phase3.king.cutoff.out.id (0.0884; not hg38).
-# LD pruning: 200 kb windows, step 1, r2 <= 0.2, after long-LD exclusion.
+# LD pruning: 500 kb windows, step 1, r2 <= 0.2, after long-LD exclusion.
 # Require at least 1000 SNPs at matching, joint QC and final PCA stages.
 # No HWE filtering, study-relative removal, strand guessing or ancestry assignment.
 
@@ -65,7 +65,7 @@ task ProjectOnto1kg {
 
         # Part 1. Preflight, download and small Python helpers
         echo "GRCh37 autosomal SNP PCA; geno <= 0.01 in each dataset"
-        echo "Reference: official deg2 exclusions, MAF >= 0.05, long-LD exclusion, pruning 200kb 1 0.2"
+        echo "Reference: official deg2 exclusions, MAF >= 0.05, long-LD exclusion, pruning 500kb 1 0.2"
         echo "20 PCs; all study samples retained; reference-mean imputation; no ancestry labels"
         echo "Resources: 2 CPUs, 16 GB RAM, 80 GB disk; minimum SNP count: 1000"
         command -v plink2 >/dev/null
@@ -321,7 +321,7 @@ task ProjectOnto1kg {
         plink2 --pfile reference.qc --extract shared.snps --maf 0.05 \
             --exclude range long_ld.txt --make-pgen --sort-vars \
             --threads 2 --memory 12000 --out reference.common
-        plink2 --pfile reference.common --indep-pairwise 200kb 1 0.2 --indep-order 2 \
+        plink2 --pfile reference.common --indep-pairwise 500kb 1 0.2 --indep-order 2 \
             --threads 2 --memory 12000 --out reference.ld
         plink2 --pfile reference.common --extract reference.ld.prune.in --make-pgen \
             --threads 2 --memory 12000 --out reference.pca_input
@@ -407,7 +407,7 @@ task ProjectOnto1kg {
             'pca_snps': len(expected),
             'pc_score_scale': 'PLINK2 PC1_SUM-PC20_SUM; no eigenvector rescaling',
             'parameters': {'build': 'GRCh37', 'geno': 0.01, 'king_cutoff': 0.0884,
-                           'reference_maf': 0.05, 'ld': '200kb 1 0.2', 'pcs': 20,
+                           'reference_maf': 0.05, 'ld': '500kb 1 0.2', 'pcs': 20,
                            'reference_exclusion_source': 'PLINK2 deg2_phase3.king.cutoff.out.id'},
             'ancestry_labels_assigned_to_study': False,
             'projection_shrinkage_corrected': False})
