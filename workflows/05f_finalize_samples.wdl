@@ -40,6 +40,9 @@ task GenerateSampleKeepList {
                 print "#FID", "IID"
             }
 
+            # Normalize CRLF line endings before matching FID/IID.
+            { sub(/\r$/, "") }
+
             # Skip headers and blank lines in either file.
             FNR == 1 && ($1 == "#FID" || $1 == "FID") { next }
             NF < 2 { next }
