@@ -42,3 +42,6 @@ workflows:
   - name: autosomal_variant_qc
     subclass: WDL
     primaryDescriptorPath: /workflows/06a_autosomal_variant_qc.wdl
+  - name: chrx_variant_qc
+    subclass: WDL
+    primaryDescriptorPath: /workflows/06b_chrX_variant_qc.wdl
