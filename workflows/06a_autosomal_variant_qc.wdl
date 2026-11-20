@@ -6,7 +6,7 @@ version 1.0
 # Outputs: filtered trio, pre-filter variant statistics and PLINK logs.
 # Execution only: sample matching, duplicate sites and output review are checked manually.
 # Parameters: biallelic A/C/G/T SNPs; geno <= 0.01; MAF >= 0.01;
-# HWE 1e-5 keep-fewhet (default k=0). Frequencies use the retained cohort.
+# HWE 1e-5 midp keep-fewhet (default k=0). Frequencies use the retained cohort.
 # No additional sample exclusions, LD pruning, long-range LD exclusion or strand flips.
 # Preserve variant IDs and alleles. Reference alignment and VCF export belong to 06b.
 # HWE is pooled across ancestries; keep-fewhet retains heterozygote-deficient sites.
@@ -47,7 +47,7 @@ task FilterAutosomalVariants {
 
         # Part 1. Run configuration
         echo "Autosomal variant QC: GRCh37; apply the final reviewed 05f keep list"
-        echo "Filters: biallelic A/C/G/T SNPs; geno 0.01; MAF 0.01; HWE 1e-5 keep-fewhet (k=0)"
+        echo "Filters: biallelic A/C/G/T SNPs; geno 0.01; MAF 0.01; HWE 1e-5 midp keep-fewhet (k=0)"
         echo "Statistics: retained cohort; no additional sample filtering or LD pruning"
         echo "Resources: 1 CPU, 4 GB RAM, 20 GB disk"
 
@@ -57,13 +57,13 @@ task FilterAutosomalVariants {
             --min-alleles 2 --max-alleles 2 --make-pgen \
             --threads 1 --memory 3000 --out selected
 
-        plink2 --pfile selected --nonfounders --freq --missing variant-only --hardy \
+        plink2 --pfile selected --nonfounders --freq --missing variant-only --hardy midp \
             --threads 1 --memory 3000 --out before_filters
 
         # Part 3. Apply all variant filters and write the final trio
         # PLINK uses its internal filter order, regardless of flag order.
         plink2 --pfile selected --nonfounders \
-            --geno 0.01 --maf 0.01 --hwe 1e-5 keep-fewhet \
+            --geno 0.01 --maf 0.01 --hwe 1e-5 midp keep-fewhet \
             --make-pgen --threads 1 --memory 3000 --out autosomes.qc
     >>>
 
