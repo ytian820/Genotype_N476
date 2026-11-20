@@ -36,3 +36,9 @@ workflows:
   - name: sex_inference
     subclass: WDL
     primaryDescriptorPath: /workflows/05e_sex_inference.wdl
+  - name: finalize_samples
+    subclass: WDL
+    primaryDescriptorPath: /workflows/05f_finalize_samples.wdl
+  - name: autosomal_variant_qc
+    subclass: WDL
+    primaryDescriptorPath: /workflows/06a_autosomal_variant_qc.wdl
