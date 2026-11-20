@@ -3,6 +3,7 @@ version 1.0
 # Purpose: chrX variant QC before TOPMed imputation; GRCh37 hardcalls.
 # Phenotype: none. Units: genotyped sample (FID/IID) and variant.
 # Inputs: complete 03 chrX VCF, 05f final keep list, reviewed 05e sex labels.
+# Manual sex override: treat Uncertain as Female for downstream chrX QC.
 # Outputs: filtered trio with sex, pre-filter statistics and PLINK logs.
 # Parameters: biallelic A/C/G/T SNPs; geno <= 0.02; MAF >= 0.01;
 # HWE 1e-5 midp keep-fewhet (k=0): default joint test on non-PAR X,
@@ -53,6 +54,10 @@ task FilterChrXVariants {
             rename(FID = `#FID`)
         labels <- read_tsv(args[2], col_types = cols(.default = col_character())) |>
             select(FID, IID, inferred_sex)
+
+        # Apply the user-specified sex override; missing labels remain invalid.
+        labels <- labels |>
+            mutate(inferred_sex = if_else(inferred_sex == "Uncertain", "Female", inferred_sex))
 
         stopifnot(!anyDuplicated(labels[c("FID", "IID")]))
         sex <- left_join(keep, labels, by = c("FID", "IID"))
